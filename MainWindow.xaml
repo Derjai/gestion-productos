@@ -3,14 +3,81 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:gestion_productos"
+        xmlns:local="clr-namespace:gestion_productos" xmlns:local1="clr-namespace:gestion_productos.ViewModel"
         mc:Ignorable="d"
-        Title="Gestión de Inventario" Height="450" Width="800">
-    <Grid>
-        <TextBlock Text="Bienvenido al Sistema de Inventario"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   FontSize="24"
-                   FontWeight="Bold"/>
+        Title="Gestión de Inventario" Height="450" Width="800"
+        Background="#2C3E50" Foreground="White">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#3498DB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderBrush" Value="#3498DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="RowBackground" Value="#ECF0F1"/>
+            <Setter Property="AlternatingRowBackground" Value="#BDC3C7"/>
+        </Style>
+    </Window.Resources>
+    <Window.DataContext>
+        <local1:MainViewModel/>
+    </Window.DataContext>    
+    <Grid Margin="10">
+        <!-- Filas y columnas-->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <!-- Lista de productos -->
+        <DataGrid Name="ProductsDataGrid"
+                  Grid.Row="0" Grid.ColumnSpan="2"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  Margin="0,0,0,10"
+                  ItemsSource="{Binding Products}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50"/>
+                <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" Width="150"/>
+                <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="200"/>
+                <DataGridTextColumn Header="Precio" Binding="{Binding Precio}" Width="100"/>
+                <DataGridTextColumn Header="Cantidad" Binding="{Binding Cantidad}" Width="100"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Botones CRUD -->
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+            <Button Name="AddButton" Content="Agregar Producto" Click="AddButton_Click" />
+            <Button Name="EditButton" Content="Editar Producto" Click="EditButton_Click" />
+            <Button Name="DeleteButton" Content="Eliminar Producto" Click="DeleteButton_Click" />
+        </StackPanel>
+        
+        <!-- Formulario-->
+        <StackPanel Grid.Row="1" Grid.Column="1" Margin="10">
+            <TextBlock Text="Detalles del Producto" FontWeight="Bold" Margin="0,0,0,5" />
+            <TextBox Name="ProductNameTextBox" Text="Nombre" Margin="0,5" />
+            <TextBox Name="ProductDescriptionTextBox" Text="Descripción" Margin="0,5" />
+            <TextBox Name="ProductPriceTextBox" Text="Precio" Margin="0,5" />
+            <TextBox Name="ProductQuantityTextBox" Text="Cantidad Disponible" Margin="0,5" />
+            <Button Name="SaveButton" Content="Guardar" Width="100" HorizontalAlignment="Right" Margin="0,10,0,0" Click="SaveButton_Click" />
+        </StackPanel>
     </Grid>
 </Window>
