@@ -37,8 +37,28 @@ namespace gestion_productos.Data
             return productos;
         }
 
+        public bool ProductExists(string productName, int? id = null)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM Productos WHERE Nombre = @Nombre" + (id.HasValue ? " AND ID ! = @ID":""), connection);
+                command.Parameters.AddWithValue("@Nombre", productName);
+                if (id.HasValue)
+                {
+                    command.Parameters.AddWithValue("@ID", id.Value);
+                }
+                int count = (int)command.ExecuteScalar();
+                return count > 0;
+            }
+        }
+
         public void AddProduct(Productos product)
         {
+            if (ProductExists(product.Nombre))
+            {
+                throw new Exception("Ya existe un producto con ese nombre");
+            }
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -53,6 +73,10 @@ namespace gestion_productos.Data
 
         public void UpdateProduct(Productos product)
         {
+            if(ProductExists(product.Nombre, product.ID))
+            {
+                throw new Exception("Ya existe un producto con ese nombre");
+            }
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -68,8 +92,6 @@ namespace gestion_productos.Data
 
         public void DeleteProduct(int productId)
         {
-            try
-            {
                 using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
                     connection.Open();
@@ -84,11 +106,5 @@ namespace gestion_productos.Data
                     else { Console.WriteLine("Producto eliminado"); }
                 }
             }
-            catch (Exception ex)
-            {
-
-                Console.WriteLine(ex.Message);
-            }
         }
-    }
 }

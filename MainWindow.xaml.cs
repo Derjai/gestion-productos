@@ -60,6 +60,12 @@ namespace gestion_productos
                 return;
             }
 
+            if(_repositorioProductos.ProductExists(ProductNameTextBox.Text))
+            {
+                MessageBox.Show("Ya existe un producto con ese nombre");
+                return;
+            }
+
             Productos newProduct = new Productos
             {
                 Nombre = ProductNameTextBox.Text,
