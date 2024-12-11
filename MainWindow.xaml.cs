@@ -1,4 +1,5 @@
-﻿using gestion_productos.Models;
+﻿using gestion_productos.Data;
+using gestion_productos.Models;
 using gestion_productos.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -23,9 +24,18 @@ namespace gestion_productos
     /// </summary>
     public partial class MainWindow : Window
     {
+        private RepositorioProductos _repositorioProductos;
         public MainWindow()
         {
             InitializeComponent();
+            _repositorioProductos = new RepositorioProductos(@"Data Source=KAISER\SQLEXPRESS;Initial Catalog=InventarioDB;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;");
+            LoadProducts();
+        }
+
+        private void LoadProducts()
+        {
+            var viewModel = (MainViewModel)this.DataContext;
+            viewModel.Products = new ObservableCollection<Productos>(_repositorioProductos.GetProducts());
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
@@ -58,7 +68,9 @@ namespace gestion_productos
                 Cantidad = quantity
             };
 
+            _repositorioProductos.AddProduct(newProduct);
             ((MainViewModel)this.DataContext).Products.Add(newProduct);
+            LoadProducts();
             ProductNameTextBox.Clear();
             ProductDescriptionTextBox.Clear();
             ProductPriceTextBox.Clear();
@@ -95,7 +107,9 @@ namespace gestion_productos
             Productos selectedProduct = (Productos)ProductsDataGrid.SelectedItem;
             if (MessageBox.Show($"¿Estás seguro de eliminar el producto '{selectedProduct.Nombre}'?", "Eliminar producto", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
+                _repositorioProductos.DeleteProduct(selectedProduct.ID);
                 ((MainViewModel)this.DataContext).Products.Remove(selectedProduct);
+                LoadProducts();
                 MessageBox.Show("Producto eliminado correctamente");
             }
         }
@@ -129,8 +143,10 @@ namespace gestion_productos
                 productToUpdate.Descripcion = ProductDescriptionTextBox.Text;
                 productToUpdate.Precio = price;
                 productToUpdate.Cantidad = quantity;
-               
-                ((MainViewModel)this.DataContext).Products = new ObservableCollection<Productos>(((MainViewModel)this.DataContext).Products);
+
+                _repositorioProductos.UpdateProduct(productToUpdate);
+                ((MainViewModel)this.DataContext).UpdateProduct(productToUpdate);
+                LoadProducts();
                 SaveButton.Content = "Guardar ";
                 SaveButton.Tag = null;
 
